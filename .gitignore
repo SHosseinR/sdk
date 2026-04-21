@@ -1,5 +1,6 @@
 # IDEs
 .vscode/
+.venv/
 __debug_bin
 .idea/
 .DS_Store

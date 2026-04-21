@@ -154,6 +154,7 @@ class TrainerClient:
         runtime: types.Runtime = types.DEFAULT_RUNTIME,
         initializer: Optional[types.Initializer] = None,
         trainer: Optional[Union[types.CustomTrainer, types.BuiltinTrainer]] = None,
+        custom_job_labels: Optional[Dict[str, str]] = None,
     ) -> str:
         """
         Create the TrainJob. You can configure these types of training task:
@@ -169,6 +170,8 @@ class TrainerClient:
                 Configuration for the dataset and model initializers.
             trainer (`Optional[types.CustomTrainer, types.BuiltinTrainer]`):
                 Configuration for Custom Training Task or Config-driven Task with Builtin Trainer.
+            custom_job_labels (`Optional[Dict[str, str]]`):
+                Configuration for Custom labels to be applied to jobs.
 
         Returns:
             str: The unique name of the TrainJob that has been generated.
@@ -204,12 +207,13 @@ class TrainerClient:
                     f"The trainer type {type(trainer)} is not supported. "
                     "Please use CustomTrainer or BuiltinTrainer."
                 )
-
+        print(f'{custom_job_labels=}')
         train_job = models.TrainerV1alpha1TrainJob(
             apiVersion=constants.API_VERSION,
             kind=constants.TRAINJOB_KIND,
             metadata=models.IoK8sApimachineryPkgApisMetaV1ObjectMeta(
-                name=train_job_name
+                name=train_job_name,
+                labels=custom_job_labels,
             ),
             spec=models.TrainerV1alpha1TrainJobSpec(
                 runtimeRef=models.TrainerV1alpha1RuntimeRef(name=runtime.name),
@@ -226,6 +230,7 @@ class TrainerClient:
                     if isinstance(initializer, types.Initializer)
                     else None
                 ),
+                labels=custom_job_labels,
             ),
         )
 
